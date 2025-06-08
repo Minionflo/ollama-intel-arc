@@ -1,11 +1,9 @@
-version: '3'
-
 services:
   whisper-ipex:
     build:
       context: whisper
       dockerfile: Dockerfile
-    image: whisper-ipex:latest
+    image: whisper-ipex:local
     container_name: whisper-ipex
     restart: unless-stopped
     devices:
