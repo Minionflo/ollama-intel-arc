@@ -1,10 +1,14 @@
-# Run Ollama and Stable Diffusion with your Intel Arc GPU
+# Run Ollama, Stable Diffusion and Automatic Speech Recognition with your Intel Arc GPU
+
+[[Blog](https://blog.eleiton.dev/posts/llm-and-genai-in-docker/)]
 
 Effortlessly deploy a Docker-based solution that uses [Open WebUI](https://github.com/open-webui/open-webui) as your user-friendly 
 AI Interface and [Ollama](https://github.com/ollama/ollama) for integrating Large Language Models (LLM).
 
 Additionally, you can run [ComfyUI](https://github.com/comfyanonymous/ComfyUI) or [SD.Next](https://github.com/vladmandic/sdnext) docker containers to 
-streamline Stable Diffusion capabilities
+streamline Stable Diffusion capabilities.
+
+You can also run an optional docker container with [OpenAI Whisper](https://github.com/openai/whisper) to perform Automatic Speech Recognition (ASR) tasks.
 
 All these containers have been optimized for Intel Arc Series GPUs on Linux systems by using [Intel® Extension for PyTorch](https://github.com/intel/intel-extension-for-pytorch).
 
@@ -27,12 +31,16 @@ All these containers have been optimized for Intel Arc Series GPUs on Linux syst
 
 3. ComfyUI
    * The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface.
-   * Uses as the base container the official [Intel® Extension for PyTorch](https://pytorch-extension.intel.com/installation?platform=gpu&version=v2.6.10%2Bxpu&os=linux%2Fwsl2&package=docker)
+   * Uses as the base container the official [Intel® Extension for PyTorch](https://pytorch-extension.intel.com/installation?platform=gpu)
 
 4. SD.Next
    * All-in-one for AI generative image based on Automatic1111
-   * Uses as the base container the official [Intel® Extension for PyTorch](https://pytorch-extension.intel.com/installation?platform=gpu&version=v2.6.10%2Bxpu&os=linux%2Fwsl2&package=docker)
+   * Uses as the base container the official [Intel® Extension for PyTorch](https://pytorch-extension.intel.com/installation?platform=gpu)
    * Uses a customized version of the SD.Next [docker file](https://github.com/vladmandic/sdnext/blob/dev/configs/Dockerfile.ipex), making it compatible with the Intel Extension for Pytorch image.
+
+5. OpenAI Whisper
+   * Robust Speech Recognition via Large-Scale Weak Supervision
+   * Uses as the base container the official [Intel® Extension for PyTorch](* Uses as the base container the official [Intel® Extension for PyTorch](https://pytorch-extension.intel.com/installation?platform=gpu)
 
 ## Setup
 Run the following commands to start your Ollama instance with Open WebUI
@@ -52,6 +60,11 @@ $ podman compose -f docker-compose.comfyui.yml up
 For SD.Next
 ```bash
 $ podman compose -f docker-compose.sdnext.yml up
+```
+
+If you want to run Whisper for automatic speech recognition, run this command in a different terminal:
+```bash
+$ podman compose -f docker-compose.whisper.yml up
 ```
 
 ## Validate
@@ -88,6 +101,45 @@ When using Open WebUI, you should see this partial output in your console, indic
 * For more information on using Open WebUI, refer to the official [documentation](https://docs.openwebui.com/)
 * That's it, go back to Open WebUI main page and start chatting.  Make sure to select the `Image` button to indicate you want to generate Images.
 ![screenshot](resources/open-webui-chat.png)
+
+## Using Automatic Speech Recognition
+* This is an example of a command to transcribe audio files:
+```bash
+  podman exec -it  whisper-ipex whisper https://www.lightbulblanguages.co.uk/resources/ge-audio/hobbies-ge.mp3 --device xpu --model small --language German --task transcribe
+```
+* Response:
+```bash
+  [00:00.000 --> 00:08.000]  Ich habe viele Hobbys. In meiner Freizeit mache ich sehr gerne Sport, wie zum Beispiel Wasserball oder Radfahren.
+  [00:08.000 --> 00:13.000]  Außerdem lese ich gerne und lerne auch gerne Fremdsprachen.
+  [00:13.000 --> 00:19.000]  Ich gehe gerne ins Kino, höre gerne Musik und treffe mich mit meinen Freunden.
+  [00:19.000 --> 00:22.000]  Früher habe ich auch viel Basketball gespielt.
+  [00:22.000 --> 00:26.000]  Im Frühling und im Sommer werde ich viele Radtouren machen.
+  [00:26.000 --> 00:29.000]  Außerdem werde ich viel schwimmen gehen.
+  [00:29.000 --> 00:33.000]  Am liebsten würde ich das natürlich im Meer machen.
+```
+* This is an example of a command to translate audio files:
+```bash
+  podman exec -it  whisper-ipex whisper https://www.lightbulblanguages.co.uk/resources/ge-audio/hobbies-ge.mp3 --device xpu --model small --language German --task translate
+```
+* Response:
+```bash
+  [00:00.000 --> 00:02.000]  I have a lot of hobbies.
+  [00:02.000 --> 00:05.000]  In my free time I like to do sports,
+  [00:05.000 --> 00:08.000]  such as water ball or cycling.
+  [00:08.000 --> 00:10.000]  Besides, I like to read
+  [00:10.000 --> 00:13.000]  and also like to learn foreign languages.
+  [00:13.000 --> 00:15.000]  I like to go to the cinema,
+  [00:15.000 --> 00:16.000]  like to listen to music
+  [00:16.000 --> 00:19.000]  and meet my friends.
+  [00:19.000 --> 00:22.000]  I used to play a lot of basketball.
+  [00:22.000 --> 00:26.000]  In spring and summer I will do a lot of cycling tours.
+  [00:26.000 --> 00:29.000]  Besides, I will go swimming a lot.
+  [00:29.000 --> 00:33.000]  Of course, I would prefer to do this in the sea.
+```
+* To use your own audio files instead of web files, place them in the `~/whisper-files` folder and access them like this:
+```bash
+  podman exec -it  whisper-ipex whisper YOUR_FILE_NAME.mp3 --device xpu --model small --task translate
+```
 
 ## Updating the containers
 If there are new updates in the [ipex-llm-inference-cpp-xpu](https://hub.docker.com/r/intelanalytics/ipex-llm-inference-cpp-xpu) docker Image or in the Open WebUI docker Image, you may want to update your containers, to stay up to date.

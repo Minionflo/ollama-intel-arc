@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  whisper-ipex:
+    build:
+      context: whisper
+      dockerfile: Dockerfile
+    image: whisper-ipex:latest
+    container_name: whisper-ipex
+    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - whisper-models-volume:/root/.cache/whisper
+      - ~/whisper-files:/app
+
+volumes:
+  whisper-models-volume: {}
