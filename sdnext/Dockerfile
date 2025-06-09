@@ -5,7 +5,11 @@ ENV SD_DATADIR="/mnt/data"
 ENV SD_MODELSDIR="/mnt/models"
 
 # Download the SDNext repository
-RUN echo '#!/bin/bash\ngit status || git clone https://github.com/vladmandic/sdnext.git .\npython /app/launch.py "$@"' | tee /bin/startup.sh
+RUN cat <<EOF > /bin/startup.sh
+#!/bin/bash
+git status || git clone https://github.com/vladmandic/sdnext.git .
+python /app/launch.py "\$@"
+EOF
 
 # Make the startup script executable
 RUN chmod 755 /bin/startup.sh
