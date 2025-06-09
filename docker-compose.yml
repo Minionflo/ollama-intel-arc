@@ -1,4 +1,3 @@
-version: '3'
 services:
   ollama-intel-arc:
     image: intelanalytics/ipex-llm-inference-cpp-xpu:latest

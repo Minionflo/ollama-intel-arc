@@ -6,7 +6,12 @@ RUN apt-get update && \
 ENV LD_PRELOAD=libjemalloc.so.2
 
 # Download the ComfyUI repository
-RUN echo '#!/bin/bash\ngit status || git clone https://github.com/comfyanonymous/ComfyUI.git /app \npip install -r /app/requirements.txt \npython /app/main.py "$@"' | tee /bin/startup.sh
+RUN cat <<EOF > /bin/startup.sh
+#!/bin/bash
+git status || git clone https://github.com/comfyanonymous/ComfyUI.git /app
+pip install -r /app/requirements.txt
+python /app/main.py "\$@"
+EOF
 
 # Make the startup script executable
 RUN chmod 755 /bin/startup.sh
