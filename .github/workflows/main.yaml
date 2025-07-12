@@ -37,6 +37,6 @@ jobs:
         with:
           context: ${{ matrix.container }}/
           push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ matrix.container }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.container }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
